@@ -41,7 +41,7 @@ echo "\n***********************************************************"
 echo "Testing 4 (the output is a transducer: fst and pdf)"
 echo "***********************************************************"
 for w in compiled/t-*.fst; do
-    fstcompose $w compiled/month.fst | fstshortestpath | fstproject --project_type=output |
+    fstcompose $w compiled/year.fst | fstshortestpath | fstproject --project_type=output |
                   fstrmepsilon | fsttopsort > compiled/$(basename $w ".fst")-out.fst
 done
 for i in compiled/t-*-out.fst; do
