@@ -12,17 +12,24 @@ done
 
 # ############ CORE OF THE PROJECT  ############
 
+# Creating mix2numerical.fst
+echo "Creating mix2numerical.fst by combining parser with date structure"
+fstconcat compiled/mmm2mm.fst compiled/pass-numbers-and-slash.fst compiled/mix2numerical.fst
 
+# Creating pt2en.fst
+echo "Creating pt2en.fst by combining translator with date structure"
+fstconcat compiled/pt2en_months.fst compiled/pass-numbers-and-slash.fst compiled/pt2en.fst
 
+# Creating en2pt.fst
+echo "Creating en2pt.fst by inverting pt2en.fst"
+fstinvert compiled/pt2en.fst compiled/en2pt.fst
 
-
-
-
-
-
-
-
-
+# Creating datenum2text.fst
+echo "Creating datenum2text.fst by concating month.fst, day.fst, year.fst and other aux fsts"
+fstconcat compiled/month.fst compiled/slash-eps.fst compiled/datenum2text.fst
+fstconcat compiled/datenum2text.fst compiled/day.fst compiled/datenum2text.fst
+fstconcat compiled/datenum2text.fst compiled/slash-comma.fst compiled/datenum2text.fst
+fstconcat compiled/datenum2text.fst compiled/year.fst compiled/datenum2text.fst
 
 # ############ generate PDFs  ############
 echo "Starting to generate PDFs"
@@ -30,8 +37,6 @@ for i in compiled/*.fst; do
 	echo "Creating image: images/$(basename $i '.fst').pdf"
    fstdraw --portrait --isymbols=syms.txt --osymbols=syms.txt $i | dot -Tpdf > images/$(basename $i '.fst').pdf
 done
-
-
 
 # ############      3 different ways of testing     ############
 # ############ (you can use the one(s) you prefer)  ############
@@ -65,16 +70,17 @@ done
 
 #3 - presents the output with the tokens concatenated (uses a different syms on the output)
 fst2word() {
-	awk '{if(NF>=3){printf("%s",$3)}}END{printf("\n")}'
+    awk '{if(NF>=3){printf("%s",$3)}}END{printf("\n")}'
 }
 
-trans=day.fst
+# trans=en2pt.fst
+trans=datenum2text.fst
 echo "\n***********************************************************"
-echo "Testing 5 6 7 8  (output is a string  using 'syms-out.txt')"
+echo "Testing"
 echo "***********************************************************"
-# for w in "DEC/9/2023" "DEC/21/2024"; do
-for w in "01" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "30" "31"; do
-    res=$(python3 ./scripts/word2fst_modified.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
+for w in "10/9/2023" "10/21/2024"; do
+# for w in "AUG/9/2023" "DEZ/9/2023"; do
+    res=$(python3 ./scripts/word2fst.py -s syms.txt $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
                        fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
                        fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
     echo "$w = $res"
