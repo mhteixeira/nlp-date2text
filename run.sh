@@ -1,4 +1,3 @@
-#!/bin/zsh
 
 mkdir -p compiled images
 
@@ -30,6 +29,18 @@ fstconcat compiled/month.fst compiled/slash-eps.fst compiled/datenum2text.fst
 fstconcat compiled/datenum2text.fst compiled/day.fst compiled/datenum2text.fst
 fstconcat compiled/datenum2text.fst compiled/slash-comma.fst compiled/datenum2text.fst
 fstconcat compiled/datenum2text.fst compiled/year.fst compiled/datenum2text.fst
+
+# Creating mix2text.fst
+echo "Creating mix2text.fst"
+fstunion compiled/en2pt.fst compiled/pt2en.fst  compiled/mix2text.fst
+fstcompose compiled/mix2text.fst compiled/mix2numerical.fst compiled/mix2text.fst
+fstcompose compiled/mix2text.fst compiled/datenum2text.fst compiled/mix2text.fst
+
+# Creating date2text.fst
+echo "Creating date2text.fst"
+fstunion compiled/mix2text.fst compiled/datenum2text.fst  compiled/date2text.fst
+
+
 
 # ############ generate PDFs  ############
 echo "Starting to generate PDFs"
@@ -74,11 +85,11 @@ fst2word() {
 }
 
 # trans=en2pt.fst
-trans=datenum2text.fst
+trans=date2text.fst
 echo "\n***********************************************************"
 echo "Testing"
 echo "***********************************************************"
-for w in "10/9/2023" "10/21/2024"; do
+for w in "MAY/12/2018" "MAI/12/2018" "05/12/2018"; do
 # for w in "AUG/9/2023" "DEZ/9/2023"; do
     res=$(python3 ./scripts/word2fst.py -s syms.txt $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
                        fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
