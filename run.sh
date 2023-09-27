@@ -1,3 +1,4 @@
+#!/bin/zsh
 
 mkdir -p compiled images
 
@@ -32,14 +33,13 @@ fstconcat compiled/datenum2text.fst compiled/year.fst compiled/datenum2text.fst
 
 # Creating mix2text.fst
 echo "Creating mix2text.fst"
-fstunion compiled/en2pt.fst compiled/pt2en.fst  compiled/mix2text.fst
+fstunion compiled/en2pt.fst compiled/pt2en.fst compiled/mix2text.fst
 fstcompose compiled/mix2text.fst compiled/mix2numerical.fst compiled/mix2text.fst
 fstcompose compiled/mix2text.fst compiled/datenum2text.fst compiled/mix2text.fst
 
 # Creating date2text.fst
 echo "Creating date2text.fst"
-fstunion compiled/mix2text.fst compiled/datenum2text.fst  compiled/date2text.fst
-
+fstunion compiled/mix2text.fst compiled/datenum2text.fst compiled/date2text.fst
 
 
 # ############ generate PDFs  ############
@@ -53,17 +53,17 @@ done
 # ############ (you can use the one(s) you prefer)  ############
 
 #1 - generates files
-# echo "\n***********************************************************"
-# echo "Testing 4 (the output is a transducer: fst and pdf)"
-# echo "***********************************************************"
-# for w in compiled/t-*.fst; do
-#     fstcompose $w compiled/year.fst | fstshortestpath | fstproject --project_type=output |
-#                   fstrmepsilon | fsttopsort > compiled/$(basename $w ".fst")-out.fst
-# done
-# for i in compiled/t-*-out.fst; do
-# 	echo "Creating image: images/$(basename $i '.fst').pdf"
-#    fstdraw --portrait --isymbols=syms.txt --osymbols=syms.txt $i | dot -Tpdf > images/$(basename $i '.fst').pdf
-# done
+echo "\n***********************************************************"
+echo "Testing 4 (the output is a transducer: fst and pdf)"
+echo "***********************************************************"
+for w in compiled/t-*.fst; do
+    fstcompose $w compiled/date2text.fst | fstshortestpath | fstproject --project_type=output |
+                  fstrmepsilon | fsttopsort > compiled/$(basename $w ".fst")-out.fst
+done
+for i in compiled/t-*-out.fst; do
+	echo "Creating image: images/$(basename $i '.fst').pdf"
+   fstdraw --portrait --isymbols=syms.txt --osymbols=syms.txt $i | dot -Tpdf > images/$(basename $i '.fst').pdf
+done
 
 
 #2 - present the output as an acceptor
@@ -84,13 +84,11 @@ fst2word() {
     awk '{if(NF>=3){printf("%s",$3)}}END{printf("\n")}'
 }
 
-# trans=en2pt.fst
 trans=date2text.fst
 echo "\n***********************************************************"
 echo "Testing"
 echo "***********************************************************"
-for w in "MAY/12/2018" "MAI/12/2018" "05/12/2018"; do
-# for w in "AUG/9/2023" "DEZ/9/2023"; do
+for w in "9/09/2001" "01/3/2011" "02/24/2022" "10/01/2099" "12/22/2043" "OCT/30/2025" "DEZ/13/2069" "FEV/25/2071" "MAR/21/2060"; do
     res=$(python3 ./scripts/word2fst.py -s syms.txt $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
                        fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
                        fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
