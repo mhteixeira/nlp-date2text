@@ -22,19 +22,5 @@
 12  2   eps 1
 0   13  DEC 1
 13  2   eps 2
-0   14  FEV 0
-14  2   eps 2
-0   15  ABR 0
-15  2   eps 4
-0   16  MAI 0
-16  2   eps 5
-0   17  AGO 0
-17  2   eps 8
-0   18  SET 0
-18  2   eps 9
-0   19  OUT 1
-19  2   eps 0
-0   20  DEZ 1
-20  2   eps 2
 2
 

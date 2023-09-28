@@ -33,8 +33,8 @@ fstconcat compiled/datenum2text.fst compiled/year.fst compiled/datenum2text.fst
 
 # Creating mix2text.fst
 echo "Creating mix2text.fst"
-fstunion compiled/en2pt.fst compiled/pt2en.fst compiled/mix2text.fst
-fstcompose compiled/mix2text.fst compiled/mix2numerical.fst compiled/mix2text.fst
+fstcompose compiled/pt2en.fst compiled/mix2numerical.fst compiled/mix2text.fst
+fstunion compiled/mix2text.fst compiled/mix2numerical.fst compiled/mix2text.fst
 fstcompose compiled/mix2text.fst compiled/datenum2text.fst compiled/mix2text.fst
 
 # Creating date2text.fst
