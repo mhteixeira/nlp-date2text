@@ -65,20 +65,6 @@ for i in compiled/t-*-out.fst; do
    fstdraw --portrait --isymbols=syms.txt --osymbols=syms.txt $i | dot -Tpdf > images/$(basename $i '.fst').pdf
 done
 
-
-#2 - present the output as an acceptor
-# echo "\n***********************************************************"
-# echo "Testing 1 2 3 4 (output is a acceptor)"
-# echo "***********************************************************"
-# trans=en2pt.fst
-# echo "\nTesting $trans"
-# for w in "SEP/9/2023" "SEP/21/2024"; do
-#     echo "\t $w"
-#     python3 ./scripts/word2fst_modified.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
-#                      fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
-#                      fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=syms.txt
-# done
-
 #3 - presents the output with the tokens concatenated (uses a different syms on the output)
 fst2word() {
     awk '{if(NF>=3){printf("%s",$3)}}END{printf("\n")}'
